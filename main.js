@@ -70,11 +70,13 @@ function shuffle(array) {
   return array;
 }
 
-function bubbleSort(array){
+function bubbleSort(array, round){
   let madeAdjustment = false
   let newArray = array
+  if(round == undefined){
+    round = 1
+  }
 
-  //console.log("before sort: " + newArray)
   for(let i = 0; i < newArray.length-1; i++){
     if(newArray[i] > newArray[i+1]){
       madeAdjustment = true
@@ -83,11 +85,11 @@ function bubbleSort(array){
       newArray[i+1] = tempStore
     }
   }
-  //console.log("after sort: " + newArray)
+  console.log("after sort round "+ round +": " + newArray)
   if(madeAdjustment == false){
     return newArray
   }else{
-    bubbleSort(array)
+    bubbleSort(array, round+1)
   }
 }
 
