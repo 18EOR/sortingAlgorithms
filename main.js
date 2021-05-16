@@ -1,7 +1,8 @@
 let elements= []
 let elementsUI= []
-let amount = 40
-
+let amount = 70
+let highlightColour = "rgb(99, 231, 116)"
+let defaultColour = "rgb(255,255,255)"
 
 start()
 
@@ -9,26 +10,26 @@ start()
 function start(){
   populateElements()
   createUI()
-  shuffle(elements)
-  updateUI()
+  randomise(elements)
+  updateUI(elements)
   bindings()
 }
 
 function bindings(){
   $('#sort').bind("click", function(){
-    bubbleSort(elements)
-    updateUI()
+    bubbleSortVisual(elements, 0, 1, false)
+    updateUI(elements)
   })
 
   $('#rand').bind("click", function(){
-    shuffle(elements)
-    updateUI()
+    randomise(elements)
+    updateUI(elements)
   })
 }
 
 function populateElements(){
   for(let i = 0; i < amount; i++){
-    elements.push(2 * (i+1))
+    elements.push(1.2 * (i+1))
   }
 }
 
@@ -40,18 +41,29 @@ function createUI(){
   $('#parent').html(str)
   elementsUI = $('#parent').children()
 
-  updateUI()
+  updateUI(elements)
 }
 
-function updateUI(){
+function updateUI(array){
   for(let i = 0; i < amount; i++){
-    elementsUI[i].style.height = elements[i] + "vh"
+    elementsUI[i].style.height = array[i] + "vh"
   }
 }
 
+function highlightElements(el, highlight){
+  if(highlight === true){
+    for(let i = 0; i < el.length; i++){
+      el[i].style.backgroundColor = highlightColour
+    }
+  }else{
+    for(let i = 0; i < el.length; i++){
+      el[i].style.backgroundColor = defaultColour
+    }
+  }
+}
 
-//#region Algorithms
-function shuffle(array) {
+//#region Randomise
+function randomise(array) {
   let currentIndex = array.length, temporaryValue, randomIndex;
   
   // While there remain elements to shuffle.
@@ -69,28 +81,40 @@ function shuffle(array) {
 
   return array;
 }
+////#endregion
 
-function bubbleSort(array, round){
-  let madeAdjustment = false
-  let newArray = array
-  if(round == undefined){
-    round = 1
+
+function bubbleSortVisual(array, index, round, madeAdjustment){
+  if (index != 0){
+    highlightElements([elementsUI[index-1], elementsUI[index]], false)
   }
-
-  for(let i = 0; i < newArray.length-1; i++){
-    if(newArray[i] > newArray[i+1]){
-      madeAdjustment = true
-      let tempStore = newArray[i]
-      newArray[i] = newArray[i+1]
-      newArray[i+1] = tempStore
+  
+  //Check if index is 1 less than array length
+  if (index >= array.length-1){
+    //[if] no adjustment was made then its fully sorted [else] reset for the next round of sorting 
+    if (madeAdjustment == false || madeAdjustment == false){
+      return
+    }else{
+      round++
+      index = 0
+      madeAdjustment = false
     }
   }
-  console.log("after sort round "+ round +": " + newArray)
-  if(madeAdjustment == false){
-    return newArray
-  }else{
-    bubbleSort(array, round+1)
-  }
+
+  highlightElements([elementsUI[index], elementsUI[index+1]], true)
+  updateUI(array)
+
+  setTimeout(sort, 1, array, index, round, madeAdjustment)
 }
 
-////#endregion
+function sort(array, index, round, madeAdjustment){
+  if (array[index] > array[index+1]){
+    let temp = array[index]
+    array[index] = array[index+1]
+    array[index+1] = temp
+    madeAdjustment = true
+  }
+  updateUI(array)
+
+  setTimeout(bubbleSortVisual, 1, array, index+1, round, madeAdjustment)
+}
