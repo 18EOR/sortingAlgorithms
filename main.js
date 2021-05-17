@@ -18,12 +18,10 @@ function start(){
 function bindings(){
   $('#sort').bind("click", function(){
     bubbleSortVisual(elements, 0, 1, false)
-    updateUI(elements)
   })
 
   $('#rand').bind("click", function(){
     randomise(elements)
-    updateUI(elements)
   })
 }
 
@@ -78,12 +76,12 @@ function randomise(array) {
     array[currentIndex] = array[randomIndex];
     array[randomIndex] = temporaryValue;
   }
-
+  updateUI(array)
   return array;
 }
-////#endregion
+//#endregion
 
-
+//#region Bubble Sort
 function bubbleSortVisual(array, index, round, madeAdjustment){
   if (index != 0){
     highlightElements([elementsUI[index-1], elementsUI[index]], false)
@@ -104,7 +102,7 @@ function bubbleSortVisual(array, index, round, madeAdjustment){
   highlightElements([elementsUI[index], elementsUI[index+1]], true)
   updateUI(array)
 
-  setTimeout(sort, 1, array, index, round, madeAdjustment)
+  setTimeout(sort, 4, array, index, round, madeAdjustment)
 }
 
 function sort(array, index, round, madeAdjustment){
@@ -116,5 +114,20 @@ function sort(array, index, round, madeAdjustment){
   }
   updateUI(array)
 
-  setTimeout(bubbleSortVisual, 1, array, index+1, round, madeAdjustment)
+  setTimeout(bubbleSortVisual, 4, array, index+1, round, madeAdjustment)
+}
+//#endregion
+
+function insertionSortVisual(array, index){
+  if(index == undefined){
+    index = 1
+  }
+
+  // for(let i = index; i >= 0; i--){
+  //   highlightElements([elementsUI[index], elementsUI[i]], true)
+
+  //   if(){
+
+  //   }
+  // }
 }
