@@ -1,8 +1,9 @@
 let elements= []
 let elementsUI= []
 let amount = 70
-let highlightColour = "rgb(99, 231, 116)"
-let defaultColour = "rgb(255,255,255)"
+const COLOUR_GREEN = "rgb(99, 231, 116)"
+const COLOUR_WHITE = "rgb(255,255,255)"
+const COLOUR_BLUE = "rgb(135, 209, 255)"
 
 start()
 
@@ -22,6 +23,10 @@ function bindings(){
 
   $('#rand').bind("click", function(){
     randomise(elements)
+  })
+
+  $('#insert').bind("click", function(){
+    insertionSortVisual(elements)
   })
 }
 
@@ -48,16 +53,32 @@ function updateUI(array){
   }
 }
 
-function highlightElements(el, highlight){
-  if(highlight === true){
-    for(let i = 0; i < el.length; i++){
-      el[i].style.backgroundColor = highlightColour
-    }
-  }else{
-    for(let i = 0; i < el.length; i++){
-      el[i].style.backgroundColor = defaultColour
-    }
+function highlightElements(el, colour){
+
+  switch(colour){
+    case "Green":
+      colour = COLOUR_GREEN
+      break
+    case "White":
+      colour = COLOUR_WHITE
+      break
+    case "Blue":
+    colour = COLOUR_BLUE
+    break
   }
+
+  for(let i = 0; i < el.length; i++){
+    el[i].style.backgroundColor = colour
+  }
+  // if(highlight === true){
+  //   for(let i = 0; i < el.length; i++){
+  //     el[i].style.backgroundColor = highlightColour
+  //   }
+  // }else{
+  //   for(let i = 0; i < el.length; i++){
+  //     el[i].style.backgroundColor = defaultColour
+  //   }
+  // }
 }
 
 //#region Randomise
@@ -84,13 +105,14 @@ function randomise(array) {
 //#region Bubble Sort
 function bubbleSortVisual(array, index, round, madeAdjustment){
   if (index != 0){
-    highlightElements([elementsUI[index-1], elementsUI[index]], false)
+    highlightElements([elementsUI[index-1], elementsUI[index]], "Blue")
   }
   
   //Check if index is 1 less than array length
   if (index >= array.length-1){
     //[if] no adjustment was made then its fully sorted [else] reset for the next round of sorting 
     if (madeAdjustment == false || madeAdjustment == false){
+      highlightElements(elementsUI, "White")
       return
     }else{
       round++
@@ -99,7 +121,7 @@ function bubbleSortVisual(array, index, round, madeAdjustment){
     }
   }
 
-  highlightElements([elementsUI[index], elementsUI[index+1]], true)
+  highlightElements([elementsUI[index], elementsUI[index+1]], "Green")
   updateUI(array)
 
   setTimeout(sort, 4, array, index, round, madeAdjustment)
@@ -118,16 +140,13 @@ function sort(array, index, round, madeAdjustment){
 }
 //#endregion
 
-function insertionSortVisual(array, index){
+function insertionSortVisual(array, index, check){
   if(index == undefined){
     index = 1
+    check = index - 1
   }
 
-  // for(let i = index; i >= 0; i--){
-  //   highlightElements([elementsUI[index], elementsUI[i]], true)
-
-  //   if(){
-
-  //   }
-  // }
+  highlightElements([elementsUI[index], elementsUI[index-1]], true)
 }
+
+//check current index and if element lower is bigger then put current index before it
