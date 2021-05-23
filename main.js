@@ -128,12 +128,16 @@ function bubbleSortVisual(array, index, round, madeAdjustment){
 }
 
 function sort(array, index, round, madeAdjustment){
-  if (array[index] > array[index+1]){
-    let temp = array[index]
-    array[index] = array[index+1]
-    array[index+1] = temp
-    madeAdjustment = true
+  //Do 3 checks per run
+  for(let i = index; i < index+4; i++){
+    if (array[i] > array[i+1]){
+      let temp = array[i]
+      array[i] = array[i+1]
+      array[i+1] = temp
+      madeAdjustment = true
+    }
   }
+
   updateUI(array)
 
   setTimeout(bubbleSortVisual, 4, array, index+1, round, madeAdjustment)
