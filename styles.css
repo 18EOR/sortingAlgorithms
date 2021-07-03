@@ -1,14 +1,16 @@
 *{
   margin: 0;
   padding: 0;
+  font-family: "Roboto", sans-serif;
 }
 body{
   overflow: hidden;
+  background-color: rgb(44, 42, 42);
 }
 
 .header{
   width: 100%;
-  height: 15vh;
+  min-height: 15vh;
   background-color: rgb(75, 146, 253);
   text-align: center;
 }
@@ -21,8 +23,7 @@ body{
 
 .mainContent{
   width: 100%;
-  height: 85vh;
-  background-color: rgb(44, 42, 42);
+  height: 60vh;
   display: flex;
   justify-content: center;
   align-items: baseline;
@@ -34,4 +35,10 @@ body{
   background-color: white;
   margin-top: auto;
   border-right: solid black 1px;
+}
+
+.bottom-line{
+  height: 1px;
+  width: 100%;
+  background-color: white;
 }
