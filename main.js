@@ -2,9 +2,8 @@ let elements= []
 let elementsUI= []
 let sortedArray= []
 
-let numOfCompares = 0
-let amount = 50
-let delay = 4
+let amount = 40
+let delay = 10
 let sortedIndex = null
 
 const Colour = {
@@ -14,7 +13,7 @@ const Colour = {
   black: '',
   white: '#FFFFFF',
   green: '#5ACD6A',
-  blue: ''
+  blue: '#4b92fd'
 }
 
 initialize()
@@ -48,7 +47,7 @@ function bindings(){
 
 function populateElements(){
   for(let i = 0; i < amount; i++){
-    elements.push(Math.round(1 * (i+1) * 100) / 100)
+    elements.push(Math.round(.6 * (i+1) * 100) / 100)
   }
 }
 
@@ -92,7 +91,6 @@ function checkSortedElements(){
   getElementHeightInNum(elementsUI[2].style.height)
 
   for(let i=elements.length-1; i > 0; i--){
-    numOfCompares++
     //console.log(`#${numOfCompares} Compairing if | ${getElementHeightInNum(elementsUI[i].style.height)} == ${sortedArray[i]}`)
     if(getElementHeightInNum(elementsUI[i].style.height) == sortedArray[i]){
       sortedIndex = i
@@ -100,9 +98,6 @@ function checkSortedElements(){
       break
     }
   }
-  
-  highlightElements(elementsUI.slice(sortedIndex, elementsUI.length), Colour.green)
-  //console.log(`current sorted index is ${sortedIndex}`)
 }
 
 
@@ -184,34 +179,40 @@ function bubbleSwap(array, index, round, madeAdjustment){
 }
 //#endregion
 
+//#region Insertion Sort
 function insertionSortVisual(array, currentIndex, indexToCheck, swapLocation){
-  let print = {
-    array: array,
-    currentIndex: currentIndex,
-    indexToCheck: indexToCheck,
-    swapLocation: swapLocation
+  if(currentIndex > array.length-1){
+    highlightElements(elementsUI, Colour.green) 
+    return
   }
-  console.log(print)
+  //Remove highlight from older checks
+  highlightElements(elementsUI, Colour.white) 
+  //HighLight Current Checks
+  highlightElements([elementsUI[currentIndex]], Colour.blue) 
+  highlightElements([elementsUI[indexToCheck]], Colour.red) 
 
-  if(indexToCheck >= 0){
-    highlightElements([elementsUI[currentIndex]], Colour.darkRed) 
-    highlightElements([elementsUI[indexToCheck]], Colour.red) 
-    if(array[currentIndex] < array[indexToCheck]){
-      swapLocation = indexToCheck
-     }
-     if(indexToCheck === 0){
-      setTimeout(insertionSortVisual, delay, array, currentIndex+1, currentIndex-1, swapLocation)
-     }else{
-      setTimeout(insertionSortVisual, delay, array, currentIndex, indexToCheck-1, swapLocation)
-     }
+  if(array[currentIndex] < array[indexToCheck]){  
+    swapLocation = indexToCheck
+  }
+  if(indexToCheck === 0 || array[indexToCheck] < array[swapLocation]){
+    //Reset 
+    setTimeout(insertionSortSwap, delay, array, currentIndex, array[currentIndex], swapLocation)
+  }else{
+    //Continue
+    setTimeout(insertionSortVisual, delay, array, currentIndex, indexToCheck-1, swapLocation)
   }
 }
 
-function insertionSortSwap(array, index, currentValue, swapIndex) {
-  if(swapIndex != undefined){
-    array.splice(index, 1)
-    array.splice(swapIndex, 0, currentValue)
-}
+function insertionSortSwap(array, currentIndex, currentValue, swapLocation) {
+  if(swapLocation != undefined){
+    array.splice(currentIndex, 1)
+    array.splice(swapLocation, 0, currentValue)
+    highlightElements(elementsUI, Colour.white) 
+    highlightElements([elementsUI[currentIndex]], Colour.red)
+    highlightElements([elementsUI[swapLocation]], Colour.blue)
+  }
   updateUI(array)
-  setTimeout(insertionSortVisual, delay, array, index+1)
+  setTimeout(insertionSortVisual, delay, array, currentIndex+1, currentIndex, undefined)
 }
+
+//#endregion
