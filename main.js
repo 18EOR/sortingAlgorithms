@@ -2,20 +2,21 @@ let elements= []
 let elementsUI= []
 let sortedArray= []
 
-let amount = 40
-let delay = 10
+let amount = 10
+let delay = 40
 let sortedIndex = null
 
 const Colour = {
   red: '#EE5E5E',
   darkRed: '#D90000',
   grey: '#9D9D9D',
-  black: '',
+  black: '#000000',
   white: '#FFFFFF',
   green: '#5ACD6A',
   blue: '#4b92fd'
 }
 
+//#region 
 initialize()
 
 function initialize(){
@@ -30,7 +31,6 @@ function initialize(){
   sortedArray.sort((a, b) => a - b)
 }
 
-//#region 
 function bindings(){
   $('#sort').bind("click", function(){
     bubbleSortVisual(elements, 0, 1, false)
@@ -43,11 +43,15 @@ function bindings(){
   $('#insert').bind("click", function(){
     insertionSortVisual(elements, 1, 0, undefined)
   })
+
+  $('#quick').bind("click", function(){
+    quickSortVisual(elements)
+  })
 }
 
 function populateElements(){
   for(let i = 0; i < amount; i++){
-    elements.push(Math.round(.6 * (i+1) * 100) / 100)
+    elements.push(Math.round(1 * (i+1) * 100) / 100)
   }
 }
 
@@ -214,5 +218,24 @@ function insertionSortSwap(array, currentIndex, currentValue, swapLocation) {
   updateUI(array)
   setTimeout(insertionSortVisual, delay, array, currentIndex+1, currentIndex, undefined)
 }
+
+//#endregion
+
+//#region Quick Sort
+function quickSortVisual(array){
+  if(array.length <= 1){
+    return array
+  }
+  
+  const pivot = array[array.length-1]
+  let arrSmaller = []
+  let arrBigger = []
+
+  for (const el of array.slice(0, array.length-1)) {
+    el > pivot ? arrBigger.push(el) : arrSmaller.push(el)
+  }
+  return [...quickSortVisual(arrSmaller), pivot, ...quickSortVisual(arrBigger)]
+}
+
 
 //#endregion
