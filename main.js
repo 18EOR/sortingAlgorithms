@@ -2,8 +2,8 @@ let elements= []
 let elementsUI= []
 let sortedArray= []
 
-let amount = 10
-let delay = 40
+let amount = 40
+let delay = 4
 let sortedIndex = null
 
 const Colour = {
@@ -16,7 +16,7 @@ const Colour = {
   blue: '#4b92fd'
 }
 
-//#region 
+//#region Initializing
 initialize()
 
 function initialize(){
@@ -45,7 +45,7 @@ function bindings(){
   })
 
   $('#quick').bind("click", function(){
-    quickSortVisual(elements)
+    quickSort(elements, 0, elements.length-1)
   })
 }
 
@@ -106,7 +106,6 @@ function checkSortedElements(){
 
 
 //#endregion
-
 
 //#region Randomise
 function randomise(array) {
@@ -222,19 +221,73 @@ function insertionSortSwap(array, currentIndex, currentValue, swapLocation) {
 //#endregion
 
 //#region Quick Sort
-function quickSortVisual(array){
-  if(array.length <= 1){
-    return array
-  }
-  
-  const pivot = array[array.length-1]
-  let arrSmaller = []
-  let arrBigger = []
 
-  for (const el of array.slice(0, array.length-1)) {
-    el > pivot ? arrBigger.push(el) : arrSmaller.push(el)
+// if(array.length <= 1){
+//   return array
+// }
+
+// const pivot = array[array.length-1]
+// let arrSmaller = []
+// let arrBigger = []
+
+// highlightElements([elementsUI[array.indexOf(pivot)]], Colour.blue)
+
+// for (const el of array.slice(0, array.length-1)) {
+//   highlightElements([elementsUI[array.indexOf(el)]], Colour.red)
+//   el > pivot ? arrBigger.push(el) : arrSmaller.push(el)
+// }
+
+// return [...quickSortVisual(arrSmaller), pivot, ...quickSortVisual(arrBigger)]
+let states = []
+async function quickSort(arr, start, end) {
+  if (start >= end) {
+    return;
   }
-  return [...quickSortVisual(arrSmaller), pivot, ...quickSortVisual(arrBigger)]
+  let index = await partition(arr, start, end);
+  states[index] = -1;
+  highlightElements(elementsUI, Colour.white)
+
+  quickSort(arr, start, index - 1)
+  quickSort(arr, index + 1, end)
+}
+
+async function partition(arr, start, end) {
+  for (let i = start; i < end; i++) {
+    states[i] = 1;
+  }
+  let pivotValue = arr[end];
+  let pivotIndex = start;
+  highlightElements([elementsUI[end]], Colour.darkRed)
+  states[pivotIndex] = 0;
+  for (let i = start; i < end; i++) {
+    if (arr[i] < pivotValue) {
+      await swap(arr, i, pivotIndex);
+      states[pivotIndex] = -1;
+      pivotIndex++;
+      states[pivotIndex] = 0;
+    }
+  }
+  await swap(arr, pivotIndex, end);
+  for (let i = start; i < end; i++) {
+    if (i != pivotIndex) {
+      states[i] = -1;
+    }
+  }
+
+  return pivotIndex;
+}
+
+async function swap(arr, a, b) {
+  updateUI(arr)
+  highlightElements([elementsUI[a],elementsUI[b]], Colour.blue)
+  await sleep(50);
+  let temp = arr[a];
+  arr[a] = arr[b];
+  arr[b] = temp;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
