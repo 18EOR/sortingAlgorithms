@@ -3,8 +3,10 @@ let elementsUI= []
 let sortedArray= []
 
 let amount = 40
-let delay = 4
+let delay = 1
 let sortedIndex = null
+let stopSorting = false
+let buttonsDisabled = false
 
 const Colour = {
   red: '#EE5E5E',
@@ -21,7 +23,7 @@ initialize()
 
 function initialize(){
   populateElements()
-  createUI()
+  createUI()  
   randomise(elements)
   updateUI(elements)
   bindings()
@@ -31,21 +33,51 @@ function initialize(){
   sortedArray.sort((a, b) => a - b)
 }
 
+function disableButtons(value){
+  buttonsDisabled = value
+  let btnNodes = document.querySelectorAll('.button')
+
+  for (let i = 0; i < btnNodes.length; i++) {
+    btnNodes[i].classList.toggle("disabled")
+  }
+}
+
 function bindings(){
   $('#sort').bind("click", function(){
+    if(buttonsDisabled)
+      return
+    stopSorting = false
+    disableButtons(true)
     bubbleSortVisual(elements, 0, 1, false)
   })
 
   $('#rand').bind("click", function(){
+    if(buttonsDisabled)
+      return
+    stopSorting = false
+    disableButtons(true)
     randomise(elements)
   })
 
   $('#insert').bind("click", function(){
+    if(buttonsDisabled)
+      return
+    stopSorting = false
+    disableButtons(true)
     insertionSortVisual(elements, 1, 0, undefined)
   })
 
-  $('#quick').bind("click", function(){
-    quickSort(elements, 0, elements.length-1)
+  $('#select').bind("click", function(){
+    if(buttonsDisabled)
+      return
+    stopSorting = false
+    disableButtons(true)
+    selectionSortVisual(elements, 0, 0)
+  })
+
+  $('#stop').bind("click", function(){
+    stopSorting = true
+    disableButtons(false)
   })
 }
 
@@ -86,17 +118,17 @@ function colourSortedElements(array){
   //compaire to old array
 }
 
-function getElementHeightInNum(heightString){
-  return heightString.substring(0, heightString.length -2)
+function getElementHeightInNum(el){
+  return parseInt(el.style.height.substring(0, el.style.height.length -2))
 }
 
 function checkSortedElements(){
   //Check how many sorted elements
-  getElementHeightInNum(elementsUI[2].style.height)
+  getElementHeightInNum(elementsUI[2])
 
   for(let i=elements.length-1; i > 0; i--){
     //console.log(`#${numOfCompares} Compairing if | ${getElementHeightInNum(elementsUI[i].style.height)} == ${sortedArray[i]}`)
-    if(getElementHeightInNum(elementsUI[i].style.height) == sortedArray[i]){
+    if(getElementHeightInNum(elementsUI[i]) == sortedArray[i]){
       sortedIndex = i
     }else{
       break
@@ -133,6 +165,8 @@ function randomise(array) {
 
 //#region Bubble Sort
 function bubbleSortVisual(array, index, round, madeAdjustment){
+  if(stopSorting)
+    return
   if (index != 0){
     highlightElements([elementsUI[index-1], elementsUI[index]], Colour.white)
   }
@@ -142,6 +176,7 @@ function bubbleSortVisual(array, index, round, madeAdjustment){
     //[if] no adjustment was made then its fully sorted [else] reset for the next round of sorting 
     if (madeAdjustment == false){
       highlightElements(elementsUI, Colour.green)
+      disableButtons(false)
       return
     }else{
       round++
@@ -184,8 +219,11 @@ function bubbleSwap(array, index, round, madeAdjustment){
 
 //#region Insertion Sort
 function insertionSortVisual(array, currentIndex, indexToCheck, swapLocation){
+  if(stopSorting)
+    return
   if(currentIndex > array.length-1){
-    highlightElements(elementsUI, Colour.green) 
+    highlightElements(elementsUI, Colour.green)
+    disableButtons(false)
     return
   }
   //Remove highlight from older checks
@@ -220,75 +258,45 @@ function insertionSortSwap(array, currentIndex, currentValue, swapLocation) {
 
 //#endregion
 
-//#region Quick Sort
+//#region Selection Sort
 
-// if(array.length <= 1){
-//   return array
-// }
-
-// const pivot = array[array.length-1]
-// let arrSmaller = []
-// let arrBigger = []
-
-// highlightElements([elementsUI[array.indexOf(pivot)]], Colour.blue)
-
-// for (const el of array.slice(0, array.length-1)) {
-//   highlightElements([elementsUI[array.indexOf(el)]], Colour.red)
-//   el > pivot ? arrBigger.push(el) : arrSmaller.push(el)
-// }
-
-// return [...quickSortVisual(arrSmaller), pivot, ...quickSortVisual(arrBigger)]
-let states = []
-async function quickSort(arr, start, end) {
-  if (start >= end) {
-    return;
+function selectionSortVisual(array, startingIndex, currentIndex, smallestIndex){
+  updateUI(array)
+  if(stopSorting)
+    return
+  //Sorted every element
+  if(startingIndex == array.length){
+    highlightElements(elementsUI, Colour.green)
+    disableButtons(false)
+    return
   }
-  let index = await partition(arr, start, end);
-  states[index] = -1;
+  //Checked every element
+  if(currentIndex >= array.length){
+    setTimeout(selectionSwap, delay, array, startingIndex, smallestIndex)
+    return
+  }
+  if(smallestIndex === undefined){
+    smallestIndex = currentIndex
+  }
+
   highlightElements(elementsUI, Colour.white)
-
-  quickSort(arr, start, index - 1)
-  quickSort(arr, index + 1, end)
-}
-
-async function partition(arr, start, end) {
-  for (let i = start; i < end; i++) {
-    states[i] = 1;
-  }
-  let pivotValue = arr[end];
-  let pivotIndex = start;
-  highlightElements([elementsUI[end]], Colour.darkRed)
-  states[pivotIndex] = 0;
-  for (let i = start; i < end; i++) {
-    if (arr[i] < pivotValue) {
-      await swap(arr, i, pivotIndex);
-      states[pivotIndex] = -1;
-      pivotIndex++;
-      states[pivotIndex] = 0;
-    }
-  }
-  await swap(arr, pivotIndex, end);
-  for (let i = start; i < end; i++) {
-    if (i != pivotIndex) {
-      states[i] = -1;
-    }
+  if(getElementHeightInNum(elementsUI[currentIndex]) < getElementHeightInNum(elementsUI[smallestIndex])){
+    smallestIndex = currentIndex
   }
 
-  return pivotIndex;
+  highlightElements([elementsUI[currentIndex]], Colour.darkRed)
+  setTimeout(selectionSortVisual, delay, array, startingIndex, currentIndex+1, smallestIndex)
 }
 
-async function swap(arr, a, b) {
-  updateUI(arr)
-  highlightElements([elementsUI[a],elementsUI[b]], Colour.blue)
-  await sleep(50);
-  let temp = arr[a];
-  arr[a] = arr[b];
-  arr[b] = temp;
-}
+function selectionSwap(array, startingIndex, smallestIndex){
+  highlightElements(elementsUI, Colour.white)
+  highlightElements([elementsUI[startingIndex], elementsUI[smallestIndex]], Colour.darkRed)
+  
+  let value = array[smallestIndex]
+  array.splice(smallestIndex, 1)
+  array.splice(startingIndex, 0, value)
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  setTimeout(selectionSortVisual, delay, array, startingIndex+1, startingIndex+1)
 }
-
 
 //#endregion

@@ -15,14 +15,28 @@
   <!--Top Page UI-->
   <div class="header">
     <h1 class="pageTitle">Sorting Algorithms</h1>
-    <button id="sort">Bubble Sort</button>
-    <button id="insert">Insertion Sort</button>
-    <button id="quick">Quick Sort</button>
-    <button id="rand">Randomise</button>
+    <div class="button-wrapper">
+      <div class="button" id="sort">Bubble Sort</div>
+      <div class="button" id="insert">Insertion Sort</div>
+      <div class="button" id="select">Selection Sort</div>
+      <div class="button" id="rand">Randomise</div>
+      <div class="red-button" id="stop">STOP</div>
+    </div>
   </div>
   <!--Sorting content UI-->
   <div id="parent" class="mainContent"></div>
   <div class="bottom-line"></div>
+  <div class="options">
+    <div class="slidecontainer">
+      <div>Slow</div>
+      <input type="range" min="1" max="600" value="300" class="slider" step="50" id="myRange">
+      <div> Fast</div>
+    </div>
+    <div class="textContainer">
+      <div>Array Length</div>
+      <input type="number" value="40" min="1" max="100">
+    </div>
+  </div>
 
   <script src="main.js"></script>
 </body>
