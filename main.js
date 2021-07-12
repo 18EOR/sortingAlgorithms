@@ -2,7 +2,8 @@ let elements= []
 let elementsUI= []
 let sortedArray= []
 
-let amount = 40
+let amount = 50
+let heigtMultiplier = 1
 let delay = 1
 let sortedIndex = null
 let stopSorting = false
@@ -27,6 +28,7 @@ function initialize(){
   randomise(elements)
   updateUI(elements)
   bindings()
+  sliderChange()
   
   //Create Sorted array Ref
   sortedArray = elements.slice()
@@ -37,8 +39,16 @@ function disableButtons(value){
   buttonsDisabled = value
   let btnNodes = document.querySelectorAll('.button')
 
-  for (let i = 0; i < btnNodes.length; i++) {
-    btnNodes[i].classList.toggle("disabled")
+  if(value){
+    for (let i = 0; i < btnNodes.length; i++) {
+      btnNodes[i].classList.add("disabled")
+      document.getElementById('arrLength').disabled = true
+    }
+  }else{
+    for (let i = 0; i < btnNodes.length; i++) {
+      btnNodes[i].classList.remove("disabled")
+      document.getElementById('arrLength').disabled = false
+    }
   }
 }
 
@@ -55,7 +65,6 @@ function bindings(){
     if(buttonsDisabled)
       return
     stopSorting = false
-    disableButtons(true)
     randomise(elements)
   })
 
@@ -82,8 +91,10 @@ function bindings(){
 }
 
 function populateElements(){
+  elements = []
+  elementsUI = []
   for(let i = 0; i < amount; i++){
-    elements.push(Math.round(1 * (i+1) * 100) / 100)
+    elements.push(Math.round(.8 * (i+1) * 100) / 100)
   }
 }
 
@@ -99,9 +110,22 @@ function createUI(){
 }
 
 function updateUI(array){
-  for(let i = 0; i < amount; i++){
+  for(let i = 0; i < elementsUI.length; i++){
     elementsUI[i].style.height = array[i] + "vh"
   }
+}
+
+function sliderChange(){
+  delay = document.getElementById('myRange').value
+}
+
+function arrayLengthChange(){
+  amount = document.getElementById('arrLength').value
+  heigtMultiplier = amount/40
+  $('#parent').html("")
+  populateElements()
+  createUI()  
+  randomise(elements)
 }
 
 function highlightElements(elements, colour){
@@ -119,17 +143,16 @@ function colourSortedElements(array){
 }
 
 function getElementHeightInNum(el){
-  return parseInt(el.style.height.substring(0, el.style.height.length -2))
+  return parseFloat(el.style.height.substring(0, el.style.height.length -2))
 }
 
 function checkSortedElements(){
   //Check how many sorted elements
-  getElementHeightInNum(elementsUI[2])
-
   for(let i=elements.length-1; i > 0; i--){
-    //console.log(`#${numOfCompares} Compairing if | ${getElementHeightInNum(elementsUI[i].style.height)} == ${sortedArray[i]}`)
+    console.log(`${getElementHeightInNum(elementsUI[i])} == ${sortedArray[i]}`)
     if(getElementHeightInNum(elementsUI[i]) == sortedArray[i]){
       sortedIndex = i
+      console.log(sortedIndex)
     }else{
       break
     }
